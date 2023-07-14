@@ -1,0 +1,62 @@
+from itertools import combinations
+
+def bal(notbalanced):
+    GS = list(map(lambda x: sum(x), notbalanced))
+    small = sum(list(map(lambda x: abs(x-GroupA), [max(GS),min(GS)])))
+    
+    if small <= 1:
+        return notbalanced, "X"
+    for index, i in enumerate(notbalanced):
+        for indexj in range(len(i)):
+            for k in range(len(notbalanced)-1, -1, -1):
+                for x in range(1,len(i)-1):
+                    if k != index:
+                        GroupkC = list(combinations(notbalanced[k], x))
+                        GroupkCS = list(map(lambda x: sum(x), GroupkC))
+                        for indexq, q in enumerate(GroupkCS):
+                            temp = [arr[:] for arr in notbalanced]
+                            for y in GroupkC[indexq]:
+                                temp[index].append(temp[k].pop(temp[k].index(y))) 
+                            temp[k].append(temp[index].pop(indexj))
+                            tS = list(map(lambda x: sum(x), temp))
+                            smalltemp = sum(list(map(lambda x: abs(x-GroupA), [max(tS),min(tS)])))
+                            if smalltemp < small:
+                                small = smalltemp
+                                Group = temp[:]
+                                print("수정!", Group)
+                                print(list(map(lambda x: sum(x), Group)))
+                                print("차이 :", small )
+                                return Group, "O"
+    return notbalanced, "X"
+                            
+
+# import random
+# test = [random.randint(1, 1000) for i in range(1, 17)]
+
+splitCount = 3
+# test = [2,2,3,2,3]
+test = [5,   6,  10,  11,  14,   14,  14, 102, 121, 140,  160, 180, 200]
+testS = sum(test)
+test.sort()
+
+GroupA = testS/splitCount
+Group = [[] for i in range(splitCount)]
+
+while len(test) > 0:
+    GS = list(map(lambda x: sum(x), Group))
+    Group[GS.index(min(GS))].append(test.pop())
+    
+print(Group)
+print(list(map(lambda x: sum(x), Group)))
+print("====================1차 결과==========================")
+Group.sort(key=lambda x: sum(x), reverse=True)
+
+while True:
+    result = bal(Group)
+    Group = result[0]
+    Group.sort(key=lambda x: sum(x), reverse=True)
+    if result[1] == "X":
+        break
+print("====================2차 결과==========================")
+print(Group)
+print(list(map(lambda x: sum(x), Group)))
